@@ -172,7 +172,8 @@ class Runner():
 
 def learn(policy, env, new_session=True,  nsteps=5, nstack=4, total_timesteps=int(1e9),
           vf_coef=0.5, ent_coef=0.01, max_grad_norm=0.5, lr=7e-4,
-          epsilon=1e-5, alpha=0.99, gamma=0.99, interval_saves=False, INTERVAL=1000):
+          epsilon=1e-5, alpha=0.99, gamma=0.99, interval_saves=False, INTERVAL=1000,
+          PATH='models'):
 
     #seeds
     tf.reset_default_graph()
@@ -213,9 +214,9 @@ def learn(policy, env, new_session=True,  nsteps=5, nstack=4, total_timesteps=in
             print('GENERATION PASS:', update, 'TIME:', time.time() - start_time)
 
             if(interval_saves):
-                file_path = os.path.join('models', env.env_id + "-" + str(update) + '.model')
+                file_path = os.path.join(PATH, env.env_id + "-" + str(update) + '.model')
             else:
-                file_path = os.path.join('models', env.env_id + '.model')
+                file_path = os.path.join(PATH, env.env_id + '.model')
 
             print(file_path)
 

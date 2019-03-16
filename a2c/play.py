@@ -12,23 +12,31 @@ from policy import Policy
 import imageio
 import time
 
-#this was pretty much copied and pasted from train.py then modified a bit to save gifs
-
+#what game you want to run
 def to_args_game(v):
   return v.lower() in ("-e", "-g", "--env", "--game")
 
+#what version of the model you'd want to run
 def to_version_game(v):
-  return v.lower() in ("-v", "--version")
+  return v.lower() in ("-v", "--version", "-i", "--iteration")
+
+#location of models
+def to_path_loc(v):
+  return v.lower() in ("-p", "--path", "-l", "--location")
 
 def main():
 
     GAME = 'SpaceInvadersNoFrameskip-v4'
     VERSION = 0
+    LOCATION = '.'
 
     if len(sys.argv) > 1:
-        if to_args_game(sys.argv[1]):
-            GAME = sys.argv[2]
-            save_path = os.path.join('models', GAME + '.model')
+        GAME = sys.argv[2]
+        VERSION = sys.argv[4]
+        LOCATION = sys.argv[6]
+        save_path = os.path.join(LOCATION, GAME + "-" + VERSION + '.model')
+    else:
+        save_path = os.path.join('models', GAME + '.model')
 
     #some of the wrapper stuff
     env = make_atari(GAME)
@@ -40,13 +48,6 @@ def main():
         ac_space=env.action_space, nenvs=1, nsteps=5, nstack=1,
         ent_coef=0.01, vf_coef=0.5, max_grad_norm=0.5,
         lr=7e-4, alpha=0.99, epsilon=1e-5, total_timesteps=int(1e9))
-
-    if len(sys.argv) > 2 and to_version_game(sys.argv[3]):
-        VERSION = sys.argv[4]
-        save_path = os.path.join('models', GAME + "-" + VERSION + '.model')
-        
-    else:
-        save_path = os.path.join('models', GAME + '.model')
     
     model.load(save_path)
 

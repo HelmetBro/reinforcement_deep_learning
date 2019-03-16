@@ -13,17 +13,25 @@ import argparse
 
 DEFAULT_GAME = 'SpaceInvadersNoFrameskip-v4'
 
-def to_args_interval(v):
-  return v.lower() in ("-s", "-i", "--interval_saves", "--intervals", "--saves")
-
 def to_args_game(v):
   return v.lower() in ("-e", "-g", "--env", "--game")
+
+def to_args_interval(v):
+  return v.lower() in ("-i", "--intervals")
+
+def to_args_save_loc(v):
+  return v.lower() in ("-s", "--save", "-p", "--path")
 
 def train(env_id, num_timesteps, num_cpu):
 
     GAME = env_id
-    if len(sys.argv) > 1 and to_args_game(sys.argv[1]):
+
+    if len(sys.argv) > 1:
         GAME = sys.argv[2]
+        INTERVAL = int(sys.argv[4])
+        PATH = sys.argv[6]
+        INT_SAVES = True
+
 
     def make_env(rank):
         def _thunk(): #i'd like to get rid of this but google says otherwise 
@@ -35,15 +43,8 @@ def train(env_id, num_timesteps, num_cpu):
     env = SubprocVecEnv([make_env(i) for i in range(num_cpu)])
 
     #option to save at each checkpoint of interval and specify interval length
-    INT_SAVES = False
-    INTERVAL = 1000
-    
-    if len(sys.argv) > 3 and to_args_interval(sys.argv[3]):
-    
-        INTERVAL = int(sys.argv[4])
-        INT_SAVES = True
-        learn(Policy, env, num_timesteps, interval_saves=INT_SAVES, INTERVAL=INTERVAL)
-
+    if len(sys.argv) > 1:
+        learn(Policy, env, num_timesteps, interval_saves=INT_SAVES, INTERVAL=INTERVAL, PATH=PATH)
     else:
         learn(Policy, env, num_timesteps)
 
