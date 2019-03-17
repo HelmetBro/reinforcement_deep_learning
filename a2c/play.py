@@ -5,10 +5,10 @@ import numpy as np
 import sys
 
 #this is from the external lib
-from atari_wrappers import make_atari, wrap_deepmind
+from a2c.atari_wrappers import make_atari, wrap_deepmind
 
-from a2c import Model
-from policy import Policy
+from a2c.a2c import Model
+from a2c.policy import Policy
 import imageio
 import time
 
@@ -28,26 +28,13 @@ def to_path_loc_model(v):
 def to_path_loc_gif(v):
   return v.lower() in ("-g", "--gifs")
 
-def main():
+def main(game='SpaceInvadersNoFrameskip-v4', version=0, model_location='.', gif_location='.'):
 
-    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
-    GAME = 'SpaceInvadersNoFrameskip-v4'
-    VERSION = 0
-    MODEL_LOCATION = '.'
-    GIF_LOCATION = '.'
-
-    if len(sys.argv) > 1:
-        GAME = sys.argv[2]
-        VERSION = sys.argv[4]
-        MODEL_LOCATION = sys.argv[6]
-        GIF_LOCATION = sys.argv[8]
-        save_path = os.path.join(MODEL_LOCATION, GAME + "-" + VERSION + '.model')
-    else:
-        save_path = os.path.join('models', GAME + '.model')
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '0'
+    save_path = os.path.join(model_location, str(game) + "-" + str(version) + '.model')
 
     #some of the wrapper stuff
-    env = make_atari(GAME)
+    env = make_atari(game)
     env = wrap_deepmind(env, frame_stack=True, clip_rewards=False, episode_life=True)
 
     #played around with the params, the ones on google seemed to work the fastest (not best, i dont have infinite time)
@@ -78,15 +65,9 @@ def main():
         if done:
             
             #save recording as gif to gifs folder
-            if len(sys.argv) > 1:
-                name = GIF_LOCATION + str(int(time.time())) + '.gif'
-            else:
-                name = '/gifs/' + str(int(time.time())) + '.gif'
-
-                imageio.mimsave(name, renders, duration=1/30)
+            name = gif_location + str(int(time.time())) + '.gif'
+            imageio.mimsave(name, renders, duration=1/30)
             
             #reset
             renders = []
             env.reset()
-
-main()
