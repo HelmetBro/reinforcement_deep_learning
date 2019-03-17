@@ -39,5 +39,20 @@ project/
 			--> instructions on how to use run and train models with various environments
 
 	+ ddqn +
+	
+		ddqn.py
+			--> contains the ddqn model which uses temporal difference learning. Also contains the main training loop for ddqn.
+		
+		play.py
+			--> renders the results of a pretrained ddqn model on the specified game
+			
+		wrappers.py
+			--> contains pytorch optimized wrappers which filter the frame data from the environment before it is passed to the ddqn model
+			
+		models/
+			--> folder to periodically store models while training from ddqn.py [necessary]
+			
+		plots/
+			--> folder to periodically store plots while training from ddqn.py [necessary]
 
 	+ ppo +

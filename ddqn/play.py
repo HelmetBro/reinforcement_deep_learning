@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import random
 import math
 import time
-from wrappers import make_atari, wrap_deepmind, wrap_pytorch
+from ddqn.wrappers import make_atari, wrap_deepmind, wrap_pytorch
 import sys
 
 class CnnDQN(nn.Module):
@@ -52,7 +52,7 @@ class DDQN(object):
 		self.state_shape = env.observation_space.shape
 		self.num_actions = env.action_space.n
 		self.policy_net = CnnDQN(self.state_shape, self.num_actions)
-		file_path = 'models/' + model_file
+		file_path = 'ddqn/models/' + model_file
 		self.policy_net.load_state_dict(torch.load(file_path))
 		self.policy_net.to(device)
 
@@ -63,47 +63,33 @@ class DDQN(object):
 		return action
 
 
-def plot(frame_idx, rewards, losses):
-	plt.figure(figsize=(20, 5))
-	plt.subplot(131)
-	plt.title('frame %s. reward: %s' % (frame_idx, np.mean(rewards[-10:])))
-	plt.plot(rewards)
-	plt.subplot(132)
-	plt.title('loss')
-	plt.plot(losses)
-	plt.savefig('ddqn1_images/' + str(frame_idx) + '.jpg')
-	plt.cla()
-	plt.clf()
-	plt.close('all')
-
-def main():
-	if len(sys.argv) != 2:
-		print('Please input an environment to play')
-		return
-	if (sys.argv[1] == 'pong'):
+def create_environment(game_name):
+	if (game_name == 'pong'):
 		ENV_ID = "PongNoFrameskip-v4"
-		model_file = "pong"
-	elif (sys.argv[1] == 'space_invaders'):
+		model_file = game_name
+	elif (game_name == 'space_invaders'):
 		ENV_ID = "SpaceInvadersNoFrameskip-v4"
-		model_file = "space_invaders"
-	elif (sys.argv[1] == 'breakout'):
+		model_file = game_name
+	elif (game_name == 'breakout'):
 		ENV_ID = "BreakoutNoFrameskip-v4"
-		model_file = "breakout"
+		model_file = game_name
 	else:
 		print('invalid game')
 		return
 
 	env = make_atari(ENV_ID)
-	if (sys.argv[1] == 'pong'):
+	if (game_name == 'pong'):
 		env = wrap_deepmind(env)
 		env = wrap_pytorch(env)
 	else:
 		env = wrap_deepmind(env, frame_stack=True, optimized=True)
-	
+	return env
+
+def play(env, game_name, seconds_to_play=10):
 	state = env.reset()
 
 	device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-	ddqn = DDQN(env, device, model_file)
+	ddqn = DDQN(env, device, game_name)
 
 	num_frames = 1000000
 	replay_initial = 10000
@@ -112,7 +98,7 @@ def main():
 	all_rewards = []
 	episode_reward = 0
 
-	state_time = time.time()
+	start_time = time.time()
 
 	for i in range(1, num_frames + 1):
 		action = ddqn.choose_action(state)
@@ -129,7 +115,8 @@ def main():
 			all_rewards.append(episode_reward)
 			episode_reward = 0
 
-	print(f'training took {time.time() - start_time} seconds')
+		if time.time() - start_time >= seconds_to_play:
+			env.close()
+			return
 
-if __name__ == "__main__":
-	main()
+	print(f'training took {time.time() - start_time} seconds')

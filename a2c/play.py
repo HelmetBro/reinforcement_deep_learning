@@ -21,20 +21,28 @@ def to_version_game(v):
   return v.lower() in ("-v", "--version", "-i", "--iteration")
 
 #location of models
-def to_path_loc(v):
-  return v.lower() in ("-p", "--path", "-l", "--location")
+def to_path_loc_model(v):
+  return v.lower() in ("-m", "--models")
+
+#location of gifs
+def to_path_loc_gif(v):
+  return v.lower() in ("-g", "--gifs")
 
 def main():
 
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
     GAME = 'SpaceInvadersNoFrameskip-v4'
     VERSION = 0
-    LOCATION = '.'
+    MODEL_LOCATION = '.'
+    GIF_LOCATION = '.'
 
     if len(sys.argv) > 1:
         GAME = sys.argv[2]
         VERSION = sys.argv[4]
-        LOCATION = sys.argv[6]
-        save_path = os.path.join(LOCATION, GAME + "-" + VERSION + '.model')
+        MODEL_LOCATION = sys.argv[6]
+        GIF_LOCATION = sys.argv[8]
+        save_path = os.path.join(MODEL_LOCATION, GAME + "-" + VERSION + '.model')
     else:
         save_path = os.path.join('models', GAME + '.model')
 
@@ -70,8 +78,12 @@ def main():
         if done:
             
             #save recording as gif to gifs folder
-            name = 'gifs/' + str(int(time.time())) + '.gif'
-            imageio.mimsave(name, renders, duration=1/30)
+            if len(sys.argv) > 1:
+                name = GIF_LOCATION + str(int(time.time())) + '.gif'
+            else:
+                name = '/gifs/' + str(int(time.time())) + '.gif'
+
+                imageio.mimsave(name, renders, duration=1/30)
             
             #reset
             renders = []
