@@ -1,11 +1,11 @@
-* Three algorithms have been implemented: a2c, ddqn, and ppo. 
+* Three algorithms have been implemented: a2c, ddqn, and mcpg. 
 * All three models were run, tested, and trained based off of 
 * our personal implementations of the algorithm.
 
 project/
 	|--> a2c
 	|--> ddqn
-	|--> ppo
+	|--> mcpg
 	|--> A2Cgifs [gifs taken from best trained model in a2c]
 	|--> DDQNgifs [gifs taken from best trained model in ddqn]
 
@@ -55,4 +55,16 @@ project/
 		plots/
 			--> folder to periodically store plots while training from ddqn.py [necessary]
 
-	+ ppo +
+	+ mcpg +
+	
+		mcpg.py	
+			--> Contains the Monto Carlo Policy Gradient
+		
+		trained_pong.py 
+			--> Runs a trained model for Pong.
+		
+		policy_1550000_Final 
+			--> Contains the trained weights for pong that can be loaded in to play games.
+
+		project.ipynb 
+			--> for displaying pong games using a trained learner
