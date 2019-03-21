@@ -21,9 +21,11 @@ render = False
 MAX_FRAMES = 2000000
 eps = np.finfo(np.float32).eps.item()
 
+
 class Flatten(nn.Module):
     def forward(self, input):
         return input.view(input.size(0), -1)
+
 
 class CnnPGN(nn.Module):
     def __init__(self, input_shape, num_actions):
@@ -56,6 +58,7 @@ class CnnPGN(nn.Module):
         x = self.fc(x)
         return x
 
+
 def prepro(I):
     """ prepro 210x160x3 uint8 frame into 6400 (80x80) 1D float vector """
     I = I[35:195]  # crop
@@ -68,7 +71,7 @@ def prepro(I):
 
 def select_action(policy, state, device):
     state = torch.from_numpy(state).float().unsqueeze(0)
-    state = state.view((1,1,80,80)).to(device)
+    state = state.view((1, 1, 80, 80)).to(device)
     probs = policy(state)
     m = Categorical(probs)
     action = m.sample()
@@ -92,12 +95,18 @@ def play_game():
     print("Preparing Game:")
     start_time = time.time()
 
-    while episode_num < 20:
+    while episode_num < 2:
         if render:
             env.render()
-        time.sleep(.015)
+
+        if time.time() - start_time >= 10:
+            env.close()
+            return
+
+        time.sleep(.005)
         difference_image = current_frame - \
-            previous_frame if previous_frame is not None else np.zeros_like(current_frame)
+            previous_frame if previous_frame is not None else np.zeros_like(
+                current_frame)
         previous_frame = current_frame
 
         action = select_action(policy, difference_image, device)
