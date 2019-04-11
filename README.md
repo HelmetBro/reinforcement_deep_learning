@@ -2,6 +2,8 @@
 * All three models were run, tested, and trained based off of 
 * our personal implementations of the algorithm.
 
+```
+
 project/
 	|--> a2c
 	|--> ddqn
@@ -68,3 +70,5 @@ project/
 
 		project.ipynb 
 			--> for displaying pong games using a trained learner
+
+```
