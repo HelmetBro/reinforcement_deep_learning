@@ -1,9 +1,7 @@
-Markup :  ## Actor to Critic, Double Deep Q-Learning, Monte-Carlo Policy Gradient ##
+## Actor to Critic, Double Deep Q-Learning, Monte-Carlo Policy Gradient
 
 
-Markup : Three algorithms have been implemented: a2c, ddqn, and mcpg. 
-Markup : All three models were run, tested, and trained based off of 
-Markup : our personal implementations.
+Three algorithms have been implemented: a2c, ddqn, and mcpg. All three models were run, tested, and trained based off of our personal implementations.
 
 ```
 
